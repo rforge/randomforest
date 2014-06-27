@@ -25,7 +25,7 @@
     m <- model.frame(terms(reformulate(attributes(Terms)$term.labels)),
                      data.frame(m))
     ## if (!is.null(y)) m <- m[, -1, drop=FALSE]
-    for (i in seq(along=ncol(m))) {
+    for (i in seq(along=m)) {
         if (is.ordered(m[[i]])) m[[i]] <- as.numeric(m[[i]])
     }
     ret <- randomForest(m, y, ...)
