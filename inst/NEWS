@@ -13,6 +13,11 @@ Wishlist (formerly TODO):
 * Allow case weights by using the weights in sampling?
 
 ========================================================================
+Changes in 4.6-8:
+
+* There was a bug in the handling of ordered factors in randomForest.formula(). 
+  (Reported by Barry Rawlingson <b.rowlingson@gmail.com>.)
+
 Change in 4.6-6:
 
 * In randomForest(), proximity matrix is not computed correctly if oob.prox=TRUE.
