@@ -17,6 +17,11 @@ Changes in 4.6-8:
 
 * There was a bug in the handling of ordered factors in randomForest.formula(). 
   (Reported by Barry Rawlingson <b.rowlingson@gmail.com>.)
+  
+* Changed randomForest.formula() and predict.randomForest() so that
+  predict() without newdata when na.action=na.exclude pads the output
+  with NAs to match the rows in the original data (suggested by Barry 
+  Rawlingson <b.rowlingson@gmail.com>.). 
 
 Change in 4.6-6:
 
