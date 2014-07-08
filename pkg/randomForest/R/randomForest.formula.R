@@ -31,7 +31,7 @@
     for (i in seq(along=m)) {
         if (is.ordered(m[[i]])) m[[i]] <- as.numeric(m[[i]])
     }
-    ret <- randomForest:::randomForest.default(m, y, ...)
+    ret <- randomForest.default(m, y, ...)
     cl <- match.call()
     cl[[1]] <- as.name("randomForest")
     ret$call <- cl
