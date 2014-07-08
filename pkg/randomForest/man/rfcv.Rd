@@ -50,7 +50,7 @@ pp. 334-343.
 }
 \examples{
 set.seed(647)
-myiris <- cbind(iris[1:4], matrix(runif(508 * nrow(iris)), nrow(iris), 508))
+myiris <- cbind(iris[1:4], matrix(runif(124 * nrow(iris)), nrow(iris), 124))
 result <- rfcv(myiris, iris$Species)
 with(result, plot(n.var, error.cv, log="x", type="o", lwd=2))
 
