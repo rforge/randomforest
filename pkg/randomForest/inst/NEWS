@@ -16,12 +16,15 @@ Wishlist (formerly TODO):
 Changes in 4.6-8:
 
 * There was a bug in the handling of ordered factors in randomForest.formula(). 
-  (Reported by Barry Rawlingson <b.rowlingson@gmail.com>.)
+  (Reported by Barry Rawlingson.)
   
 * Changed randomForest.formula() and predict.randomForest() so that
   predict() without newdata when na.action=na.exclude pads the output
   with NAs to match the rows in the original data (suggested by Barry 
-  Rawlingson <b.rowlingson@gmail.com>.). 
+  Rawlingson.). 
+  
+* There was a long standing bug in randomForest(..., proximity=TRUE, oob.prox=FALSE)
+  in regression mode. (Thanks to Stefano Romano for the report.)   
 
 Change in 4.6-6:
 
