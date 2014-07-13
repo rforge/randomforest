@@ -83,8 +83,8 @@ mylevels <- function(x) if (is.factor(x)) levels(x) else 0
         xlevels <- as.list(rep(0, p))
     }
     maxcat <- max(ncat)
-    if (maxcat > 32)
-        stop("Can not handle categorical predictors with more than 32 categories.")
+    if (maxcat > 53)
+        stop("Can not handle categorical predictors with more than 53 categories.")
 
     if (classRF) {
         nclass <- length(levels(y))
