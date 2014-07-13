@@ -1,18 +1,16 @@
 Wishlist (formerly TODO):
 
-* There are still errors in the classification mode with predictors
-  having 32 categories.  Don't use such predictors for now.  I will
-  try my best to fix it in the next version.
-
 * Implement the new scheme of handling classwt in classification.
-
-* Allow categorical predictors with more than 32 categories.
 
 * Use more compact storage of proximity matrix.
 
 * Allow case weights by using the weights in sampling?
 
 ========================================================================
+Changes in 4.6-9:
+
+* Categorical predictors are allowed to have up to 53 categories now.
+
 Changes in 4.6-8:
 
 * There was a bug in the handling of ordered factors in randomForest.formula(). 
