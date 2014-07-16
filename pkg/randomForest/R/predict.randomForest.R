@@ -92,7 +92,8 @@
         x <- x[, vname, drop=FALSE]
     }
     if (is.data.frame(x)) {
-        xfactor <- which(sapply(x, is.factor))
+		isFactor <- function(x) is.factor(x) & ! is.ordered(x)
+        xfactor <- which(sapply(x, isFactor))
         if (length(xfactor) > 0 && "xlevels" %in% names(object$forest)) {
             for (i in xfactor) {
                 if (any(! levels(x[[i]]) %in% object$forest$xlevels[[i]]))
