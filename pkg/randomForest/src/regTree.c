@@ -310,8 +310,8 @@ void predictRegTree(double *x, int nsample, int mdim,
                     double *ypred, double *split, double *nodepred,
                     int *splitVar, int treeSize, int *cat, int maxcat,
                     int *nodex) {
-    int i, j, k, m, *cbestsplit;
-	double dpack;
+    int i, k, m, *cbestsplit=NULL;
+	/* double dpack; */
 
     /* decode the categorical splits */
     if (maxcat > 1) {
@@ -319,34 +319,27 @@ void predictRegTree(double *x, int nsample, int mdim,
         zeroInt(cbestsplit, maxcat * treeSize);
         for (i = 0; i < treeSize; ++i) {
             if (nodestatus[i] != NODE_TERMINAL && cat[splitVar[i] - 1] > 1) {
-                dpack = split[i];
-                /* unpack `npack' into bits */
-                /* unpack(dpack, maxcat, cbestsplit + i * maxcat); */
-                for (j = 0; j < cat[splitVar[i] - 1]; ++j) {
-                	cbestsplit[j + i*maxcat] = ((unsigned long) dpack & 1) ? 1 : 0;
-                	dpack = dpack / 2.0 ;
-                    /* cbestsplit[j + i*maxcat] = npack & 1; */
-                }
+                unpack(split[i], maxcat, cbestsplit + i * maxcat);
             }
         }
     }
 
     for (i = 0; i < nsample; ++i) {
-	k = 0;
-	while (nodestatus[k] != NODE_TERMINAL) { /* go down the tree */
-	    m = splitVar[k] - 1;
-	    if (cat[m] == 1) {
-		k = (x[m + i*mdim] <= split[k]) ?
-		    lDaughter[k] - 1 : rDaughter[k] - 1;
-	    } else {
-	        /* Split by a categorical predictor */
-	        k = cbestsplit[(int) x[m + i * mdim] - 1 + k * maxcat] ?
+    	k = 0;
+    	while (nodestatus[k] != NODE_TERMINAL) { /* go down the tree */
+    		m = splitVar[k] - 1;
+    		if (cat[m] == 1) {
+    			k = (x[m + i*mdim] <= split[k]) ?
+    					lDaughter[k] - 1 : rDaughter[k] - 1;
+    		} else {
+    			/* Split by a categorical predictor */
+    			k = cbestsplit[(int) x[m + i * mdim] - 1 + k * maxcat] ?
                     lDaughter[k] - 1 : rDaughter[k] - 1;
-	    }
-	}
-	/* terminal node: assign prediction and move on to next */
-	ypred[i] = nodepred[k];
-	nodex[i] = k + 1;
+    		}
+    	}
+    	/* terminal node: assign prediction and move on to next */
+    	ypred[i] = nodepred[k];
+    	nodex[i] = k + 1;
     }
     if (maxcat > 1) Free(cbestsplit);
 }

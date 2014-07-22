@@ -264,20 +264,6 @@ void unpack(const double pack, const int nBits, int *bits) {
     }
 }
 
-/*
-unsigned int pack(int nBits, int *bits) {
-    int i = nBits;
-	unsigned int pack = 0;
-    while (--i >= 0) pack += bits[i] << i;
-    return(pack);
-}
-
-void unpack(int nBits, unsigned int pack, int *bits) {
-    int i;
-    for (i = 0; i < nBits; pack >>= 1, ++i) bits[i] = pack & 1;
-}
-*/
-
 void F77_NAME(unpack)(double *pack, int *nBits, int *bits) {
 	unpack(*pack, *nBits, bits);
 }

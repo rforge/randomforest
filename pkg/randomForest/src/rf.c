@@ -86,21 +86,21 @@ void classRF(double *x, int *dimx, int *cl, int *ncl, int *cat, int *maxcat,
 
     int nsample0, mdim, nclass, addClass, mtry, ntest, nsample, ndsize,
         mimp, nimp, near, nuse, noutall, nrightall, nrightimpall,
-	keepInbag, nstrata;
+        keepInbag, nstrata;
     int jb, j, n, m, k, idxByNnode, idxByNsample, imp, localImp, iprox,
-	oobprox, keepf, replace, stratify, trace, *nright,
-	*nrightimp, *nout, *nclts, Ntree;
+		oobprox, keepf, replace, stratify, trace, *nright,
+		*nrightimp, *nout, *nclts=NULL, Ntree;
 
     int *out, *bestsplitnext, *bestsplit, *nodepop, *jin, *nodex,
-	*nodexts, *nodestart, *ta, *ncase, *jerr, *varUsed,
-	*jtr, *classFreq, *idmove, *jvr,
-	*at, *a, *b, *mind, *nind, *jts, *oobpair;
-    int **strata_idx, *strata_size, last, ktmp, nEmpty, ntry;
+		*nodexts=NULL, *nodestart, *ta, *ncase, *jerr, *varUsed,
+		*jtr, *classFreq, *idmove, *jvr,
+		*at, *a, *b, *mind, *nind, *jts, *oobpair=NULL;
+    int **strata_idx=NULL, *strata_size=NULL, last, ktmp, nEmpty, ntry;
 
     double av=0.0, delta=0.0;
 
     double *tgini, *tx, *wl, *classpop, *tclasscat, *tclasspop, *win,
-        *tp, *wr;
+        *wr;
 
     addClass = Options[0];
     imp      = Options[1];
@@ -133,7 +133,7 @@ void classRF(double *x, int *dimx, int *cl, int *ncl, int *cat, int *maxcat,
     tclasspop =  (double *) S_alloc(nclass, sizeof(double));
     tx =         (double *) S_alloc(nsample, sizeof(double));
     win =        (double *) S_alloc(nsample, sizeof(double));
-    tp =         (double *) S_alloc(nsample, sizeof(double));
+    /* tp =         (double *) S_alloc(nsample, sizeof(double)); */
 
     out =           (int *) S_alloc(nsample, sizeof(int));
     bestsplitnext = (int *) S_alloc(*nrnodes, sizeof(int));
@@ -190,7 +190,7 @@ void classRF(double *x, int *dimx, int *cl, int *ncl, int *cat, int *maxcat,
 	    strata_idx[strata[n] - 1][strata_size[strata[n] - 1] - 1] = n;
 	}
     } else {
-	nind = replace ? NULL : (int *) S_alloc(nsample, sizeof(int));
+    	nind = replace ? NULL : (int *) S_alloc(nsample, sizeof(int));
     }
 
     /*    INITIALIZE FOR RUN */
@@ -201,15 +201,15 @@ void classRF(double *x, int *dimx, int *cl, int *ncl, int *cat, int *maxcat,
     zeroDouble(errtr, (nclass + 1) * Ntree);
 
     if (*labelts) {
-	nclts  = (int *) S_alloc(nclass, sizeof(int));
-	for (n = 0; n < ntest; ++n) nclts[clts[n]-1]++;
-	zeroDouble(errts, (nclass + 1) * Ntree);
+    	nclts  = (int *) S_alloc(nclass, sizeof(int));
+    	for (n = 0; n < ntest; ++n) nclts[clts[n]-1]++;
+		zeroDouble(errts, (nclass + 1) * Ntree);
     }
 
     if (imp) {
         zeroDouble(imprt, (nclass+2) * mdim);
         zeroDouble(impsd, (nclass+1) * mdim);
-	if (localImp) zeroDouble(impmat, nsample * mdim);
+        if (localImp) zeroDouble(impmat, nsample * mdim);
     }
     if (iprox) {
         zeroDouble(prox, nsample0 * nsample0);
@@ -623,37 +623,37 @@ void oob(int nsample, int nclass, int *jin, int *cl, int *jtr,int *jerr,
 
     noob = 0;
     for (n = 0; n < nsample; ++n) {
-	if (out[n]) {
-	    noob++;
-	    noobcl[cl[n]-1]++;
-	    smax = 0.0;
-	    smaxtr = 0.0;
-	    ntie = 1;
-	    for (j = 0; j < nclass; ++j) {
-	    	qq = (((double) counttr[j + n*nclass]) / out[n]) / cutoff[j];
-	    	if (j+1 != cl[n]) smax = (qq > smax) ? qq : smax;
-	    	/* if vote / cutoff is larger than current max, re-set max and
-		   	   change predicted class to the current class */
-	    	if (qq > smaxtr) {
-	    		smaxtr = qq;
-	    		jest[n] = j+1;
-	    		ntie = 1;
-	    	}
-	    	/* break tie at random */
-	    	if (qq == smaxtr) {
-	    		if (unif_rand() < 1.0 / ntie) {
-	    			smaxtr = qq;
-	    			jest[n] = j+1;
-	    		}
-	    		ntie++;
-	    	}
-	    }
-	    if (jest[n] != cl[n]) {
-		errtr[cl[n]] += 1.0;
-		errtr[0] += 1.0;
-		jerr[n] = 1;
-	    }
-	}
+    	if (out[n]) {
+    		noob++;
+    		noobcl[cl[n]-1]++;
+    		smax = 0.0;
+    		smaxtr = 0.0;
+    		ntie = 1;
+    		for (j = 0; j < nclass; ++j) {
+    			qq = (((double) counttr[j + n*nclass]) / out[n]) / cutoff[j];
+    			if (j+1 != cl[n]) smax = (qq > smax) ? qq : smax;
+    			/* if vote / cutoff is larger than current max, re-set max and
+		   	   	   change predicted class to the current class */
+    			if (qq > smaxtr) {
+    				smaxtr = qq;
+    				jest[n] = j+1;
+    				ntie = 1;
+    			}
+    			/* break tie at random */
+    			if (qq == smaxtr) {
+    				if (unif_rand() < 1.0 / ntie) {
+    					smaxtr = qq;
+    					jest[n] = j+1;
+    				}
+    				ntie++;
+    			}
+    		}
+    		if (jest[n] != cl[n]) {
+    			errtr[cl[n]] += 1.0;
+    			errtr[0] += 1.0;
+    			jerr[n] = 1;
+    		}
+    	}
     }
     errtr[0] /= noob;
     for (n = 1; n <= nclass; ++n) errtr[n] /= noobcl[n-1];

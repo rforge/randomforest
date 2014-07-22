@@ -419,8 +419,7 @@ void predictClassTree(double *x, int n, int mdim, int *treemap,
 		      int *bestvar, int *nodeclass,
 		      int treeSize, int *cat, int nclass,
 		      int *jts, int *nodex, int maxcat) {
-    int m, i, j, k, *cbestsplit;
-	double dpack;
+    int m, i, k, *cbestsplit=NULL;
 
     /* decode the categorical splits */
     if (maxcat > 1) {
@@ -429,13 +428,12 @@ void predictClassTree(double *x, int n, int mdim, int *treemap,
         for (i = 0; i < treeSize; ++i) {
             if (nodestatus[i] != NODE_TERMINAL) {
                 if (cat[bestvar[i] - 1] > 1) {
-                    dpack = xbestsplit[i];
                     /* unpack `dpack' into bits */
-                    /* unpack(dpack, maxcat, cbestsplit + i * maxcat); */
-                    for (j = 0; j < cat[bestvar[i] - 1]; ++j) {
+                    unpack(xbestsplit[i], maxcat, cbestsplit + i * maxcat);
+                    /* for (j = 0; j < cat[bestvar[i] - 1]; ++j) {
                     	cbestsplit[j + i*maxcat] = ((unsigned long) dpack & 1) ? 1 : 0;
                     	dpack = dpack / 2;
-                    }
+                    }*/
                 }
             }
         }

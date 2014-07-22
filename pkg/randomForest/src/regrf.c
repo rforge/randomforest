@@ -49,16 +49,16 @@ void regRF(double *x, double *y, int *xdim, int *sampsize,
 
   *************************************************************************/
 
-    double errts = 0.0, averrb, meanY, meanYts, varY, varYts, r, xrand,
+    double errts = 0.0, meanY, meanYts, varY, varYts, r, xrand,
 	errb = 0.0, resid=0.0, ooberr, ooberrperm, delta, *resOOB;
 
-    double *yb, *xtmp, *xb, *ytr, *ytree, *tgini;
+    double *yb, *xtmp, *xb, *ytr, *ytree=NULL, *tgini;
 
     int k, m, mr, n, nOOB, j, jout, idx, ntest, last, ktmp, nPerm,
         nsample, mdim, keepF, keepInbag;
     int *oobpair, varImp, localImp, *varUsed;
 
-    int *in, *nind, *nodex, *nodexts;
+    int *in, *nind, *nodex, *nodexts=NULL;
 
     nsample = xdim[0];
     mdim = xdim[1];
@@ -83,17 +83,16 @@ void regRF(double *x, double *y, int *xdim, int *sampsize,
     nind = *replace ? NULL : (int *) S_alloc(nsample, sizeof(int));
 
     if (*testdat) {
-	ytree      = (double *) S_alloc(ntest, sizeof(double));
-	nodexts    = (int *) S_alloc(ntest, sizeof(int));
+    	ytree      = (double *) S_alloc(ntest, sizeof(double));
+    	nodexts    = (int *) S_alloc(ntest, sizeof(int));
     }
     oobpair = (*doProx && *oobprox) ?
-	(int *) S_alloc(nsample * nsample, sizeof(int)) : NULL;
+    		(int *) S_alloc(nsample * nsample, sizeof(int)) : NULL;
 
     /* If variable importance is requested, tgini points to the second
        "column" of errimp, otherwise it's just the same as errimp. */
     tgini = varImp ? errimp + mdim : errimp;
 
-    averrb = 0.0;
     meanY = 0.0;
     varY = 0.0;
 
@@ -361,31 +360,31 @@ void regForest(double *x, double *ypred, int *mdim, int *n,
     idx1 = 0;
     idx2 = 0;
     for (i = 0; i < *ntree; ++i) {
-	zeroDouble(ytree, *n);
-	predictRegTree(x, *n, *mdim, lDaughter + idx1, rDaughter + idx1,
+    	zeroDouble(ytree, *n);
+    	predictRegTree(x, *n, *mdim, lDaughter + idx1, rDaughter + idx1,
                        nodestatus + idx1, ytree, xsplit + idx1,
                        avnodes + idx1, mbest + idx1, treeSize[i], cat, *maxcat,
                        nodex + idx2);
 
-	for (j = 0; j < *n; ++j) ypred[j] += ytree[j];
-	if (*keepPred) {
-	    for (j = 0; j < *n; ++j) allpred[j + i * *n] = ytree[j];
-	}
-	/* if desired, do proximities for this round */
-	if (*doProx) computeProximity(proxMat, 0, nodex + idx2, junk,
+    	for (j = 0; j < *n; ++j) ypred[j] += ytree[j];
+    	if (*keepPred) {
+    		for (j = 0; j < *n; ++j) allpred[j + i * *n] = ytree[j];
+    	}
+    	/* if desired, do proximities for this round */
+    	if (*doProx) computeProximity(proxMat, 0, nodex + idx2, junk,
 				      junk, *n);
-	idx1 += *nrnodes; /* increment the offset */
-	if (*nodes) idx2 += *n;
+    	idx1 += *nrnodes; /* increment the offset */
+    	if (*nodes) idx2 += *n;
     }
     for (i = 0; i < *n; ++i) ypred[i] /= *ntree;
     if (*doProx) {
-	for (i = 0; i < *n; ++i) {
-	    for (j = i + 1; j < *n; ++j) {
-                proxMat[i + j * *n] /= *ntree;
-		proxMat[j + i * *n] = proxMat[i + j * *n];
-	    }
-	    proxMat[i + i * *n] = 1.0;
-	}
+    	for (i = 0; i < *n; ++i) {
+    		for (j = i + 1; j < *n; ++j) {
+    			proxMat[i + j * *n] /= *ntree;
+    			proxMat[j + i * *n] = proxMat[i + j * *n];
+    		}
+    		proxMat[i + i * *n] = 1.0;
+    	}
     }
 }
 
