@@ -61,18 +61,23 @@ void makeA(double *x, const int mdim, const int nsample, int *cat, int *a,
        a(m,n) is the case number in which xs(m, n) occurs. The b matrix is
        also contructed here.  If the mth variable is categorical, then
        a(m, n) is the category of the nth case number. */
-    int i, j, n1, n2, *index;
-    double *v;
+    int i, j, n1, n2, *index, nUsableVar=0;
+    double *v, xmin=0.0, xmax=0.0;
 
     v     = (double *) Calloc(nsample, double);
     index = (int *) Calloc(nsample, int);
 
     for (i = 0; i < mdim; ++i) {
+    	xmax = x[i];
+    	xmin = x[i];
         if (cat[i] == 1) { /* numerical predictor */
             for (j = 0; j < nsample; ++j) {
+            	xmax = ( x[i + j * mdim] > xmax ) ? x[i + j * mdim] : xmax;
+            	xmin = ( x[i + j * mdim] < xmin ) ? x[i + j * mdim] : xmin;
                 v[j] = x[i + j * mdim];
                 index[j] = j + 1;
             }
+            if (xmax > xmin) nUsableVar ++;
             R_qsort_I(v, index, 1, nsample);
 
             /*  this sorts the v(n) in ascending order. index(n) is the case
@@ -88,10 +93,15 @@ void makeA(double *x, const int mdim, const int nsample, int *cat, int *a,
             }
             a[i + (nsample-1) * mdim] = index[nsample-1];
         } else { /* categorical predictor */
-            for (j = 0; j < nsample; ++j)
+            for (j = 0; j < nsample; ++j) {
+            	xmax = ( x[i + j * mdim] > xmax ) ? x[i + j * mdim] : xmax;
+            	xmin = ( x[i + j * mdim] < xmin ) ? x[i + j * mdim] : xmin;
                 a[i + j*mdim] = (int) x[i + j * mdim];
+            }
+            if (xmax > xmin) nUsableVar ++;
         }
     }
+    if (nUsableVar == 0) error("No usable variable (with more than one unique value) to split data.");
     Free(index);
     Free(v);
 }
